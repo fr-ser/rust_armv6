@@ -2,6 +2,14 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+
+# adding necessary config
+mkdir -p "$(pwd)/.cargo"
+cat << EOF > "$(pwd)/.cargo/config"
+[target.arm-unknown-linux-gnueabihf]
+linker = "/rpi_tools/arm-bcm2708/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc"
+EOF
+
 WORKDIR="/work"
 docker run --rm -t \
        -u "$(id -u):$(id -g)" \
@@ -10,4 +18,6 @@ docker run --rm -t \
        -w "${WORKDIR}" \
        -v "$(pwd):${WORKDIR}" \
        -v "${HOME}/.cargo/registry:/usr/local/cargo/registry" \
-       mdirkse/rust_armv6:latest
+       rust_armv6
+
+head -n -2 .cargo/config > temp.txt && mv temp.txt .cargo/config
